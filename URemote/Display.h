@@ -170,6 +170,8 @@ public:
   void notify(char *pszNote);
   void setSliderValue(uint8_t st, int8_t iValue);
   void RingIndicator(uint8_t n);
+  // V2 hardware-key diagnostic: BOOT next page, PWR previous page.
+  void navigateWithKey(int8_t direction);
 
 private:
   void swipeCheck(int16_t dX, int16_t dY);
