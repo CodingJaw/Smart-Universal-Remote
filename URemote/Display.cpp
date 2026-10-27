@@ -8,7 +8,7 @@ Display and UI code
 #include "CST816T.h"
 #include "Lights.h"
 #include <FunctionalInterrupt.h>
-#include "display.h"
+#include "Display.h"
 #include <math.h>
 #include "QMI8658.h"
 #include "Media.h"

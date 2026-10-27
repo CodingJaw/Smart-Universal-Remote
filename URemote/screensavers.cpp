@@ -1,6 +1,6 @@
 #include "screensavers.h"
 #include <time.h>
-#include "display.h"
+#include "Display.h"
 
 extern TFT_eSPI tft;
 extern TFT_eSprite sprite;

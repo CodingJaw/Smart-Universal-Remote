@@ -116,7 +116,7 @@ void startListener(void);
 #include <IRremote.hpp> // IRremote from library manager
 #endif
 
-#include "display.h"
+#include "Display.h"
 #include "Lights.h" // Uses ~3KB
 Lights lights;
 
