@@ -89,7 +89,7 @@ void Media::init()
   I2S.setDataPin(I2S_DOUT);
   I2S.setFsPin(I2S_LRC);
   m_i2sReady = (I2S.begin(I2S_PHILIPS_MODE, sampleRate, 16) != 0);
-  Serial.printf("[V2-I2S] %s BCLK=%d DOUT=%d LRC=%d\\n",
+  Serial.printf("[V2-I2S] %s BCLK=%d DOUT=%d LRC=%d\n",
                 m_i2sReady ? "ready" : "disabled",
                 I2S_BCLK, I2S_DOUT, I2S_LRC);
 #endif
