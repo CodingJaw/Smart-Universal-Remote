@@ -27,4 +27,7 @@ private:
   bool pressed_ = false;
   uint32_t lastPollMs_ = 0;
   uint32_t lastValidTouchMs_ = 0;
+  uint32_t lastReportMs_ = 0;
+  uint32_t readCount_ = 0;
+  uint32_t errorCount_ = 0;
 };
