@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Build with Arduino IDE 1.8.57.0
+// PlatformIO application entrypoint: standard Arduino-framework C++ source.
 //  ESP32: ( <=2.0.14 or 3.2.0+ ) ESP32S3 Dev Module, QIO, CPU Freq: 80MHz for lowest power (<60mA),
 //  Flash: 16MB
 //  Partition: 16MB (3MB APP/9.9 FATFS)
@@ -44,6 +44,7 @@ SOFTWARE.
 #define CLIENT_ENABLE // uncomment for PC WebSocket client
 #define IR_ENABLE // uncomment for IR
 
+#include <Arduino.h>
 #include <WiFi.h>
 #include "Media.h"
 #include "eeMem.h"
@@ -69,7 +70,12 @@ Media media;
 AsyncWebServer server( 80 );
 AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
 int WsClientID;
+// Standard C++ requires declarations that the Arduino .ino preprocessor
+// previously generated automatically.
 void jsonCallback(int16_t iName, int iValue, char *psValue);
+String setupJson();
+void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
+               AwsEventType type, void *arg, uint8_t *data, size_t len);
 JsonParse jsonParse(jsonCallback);
 #endif
 int WsPcClientID;
@@ -81,6 +87,7 @@ BleKeyboard bleKeyboard;
 
 #ifdef CLIENT_ENABLE
 #include "WebSocketClient.h"
+void webSocketEventHandler(uint8_t event, char *data, uint16_t length);
 WebSocketClient WsClient;
 bool bWscConnected;
 void WscSend(String s);

@@ -59,8 +59,13 @@ extern void consolePrint(String s); // for browser debug
  #define PWR_BTN   6
  
  #define DISPLAY_HEIGHT 320
- #include "CST328.h"
- CST328 touch(TP_SDA, TP_SCL, TP_RST, TP_INT);
+ #if defined(WAVESHARE_LCD_28_V2)
+  #include "CST3530.h"
+  CST3530 touch(TP_SDA, TP_SCL, TP_RST, TP_INT);
+ #else
+  #include "CST328.h"
+  CST328 touch(TP_SDA, TP_SCL, TP_RST, TP_INT);
+ #endif
 #endif
 
 #if (USER_SETUP_ID==203) // 240x280
