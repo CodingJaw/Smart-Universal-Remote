@@ -728,7 +728,12 @@ void loop()
   if(millis() - lastMS >= 1000) // only do stuff once per second
   {
     lastMS = millis();
-    getLocalTime(&gLTime);
+    // getLocalTime(&gLTime) waits up to 5000 ms when NTP has not been
+    // configured. That stalled the entire UI loop and reduced touch
+    // polling to ~1 read per 5 seconds on a new/unprovisioned remote.
+    // Read the current clock without waiting for network time.
+    const time_t now = time(nullptr);
+    localtime_r(&now, &gLTime);
 
     secondsWiFi(); // once per second stuff, returns true once on connect
 
