@@ -38,3 +38,39 @@ Wi-Fi SmartConfig notification, not a touchscreen error.
 This is an initial driver port; confirm I2C detection, taps, long-presses,
 and all swipe directions on a physical Waveshare V2 before treating it
 as hardware-validated.
+
+## Touch and button diagnostics
+
+The V2 driver now follows the reset sequence validated in our OMOTE V2
+code: initialize Wire1, assert GPIO2 low for 100 ms, release, then wait
+500 ms before probing CST3530 at I2C 0x58. Touch is polled every 20 ms.
+
+PlatformIO builds native USB CDC support into the ESP32-S3 firmware.
+Open the device monitor at 115200 baud after uploading:
+
+```bash
+pio device list
+pio device monitor -p /dev/ttyACM0 -b 115200
+```
+
+Expected serial output when USB serial is connected:
+
+```text
+[V2] Smart Universal Remote starting
+[CST3530] V2 touch detected at I2C 0x58 (SDA1 SCL3)
+[CST3530] 5s reads=... errors=0 irq=... pressed=0
+[CST3530] down x=... y=...
+[CST3530] release
+```
+
+For an independent UI test, press the **BOOT** button (GPIO0) *after*
+the device has started to advance to the next page, and tap **PWR**
+(GPIO6) to go to the previous page. These are diagnostic navigation
+bindings; BOOT held at reset enters ESP32 download mode. The original
+firmware does not otherwise use the Waveshare's physical keys for its
+remote controls. The board also has no built-in IR emitter, so on-screen
+IR commands require separate IR-transmitting hardware.
+
+The startup clock/compass dashboard and "Use EspTouch" message are
+normal. The latter requests Wi-Fi SmartConfig and does not affect
+touch-controller detection.
