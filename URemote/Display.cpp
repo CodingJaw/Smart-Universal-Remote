@@ -160,6 +160,32 @@ void Display::init(void)
 #endif
 }
 
+// Diagnostic navigation for the two physical buttons on Waveshare 2.8 V2.
+// The stock CuriousTech firmware does not use the board's BOOT/PWR buttons.
+void Display::navigateWithKey(int8_t direction)
+{
+  if (!m_nTileCnt) return;
+  if (m_bSleeping) endSleep();
+
+  int16_t next = static_cast<int16_t>(m_nCurrTile) + direction;
+  if (next >= m_nTileCnt) next = 0;
+  if (next < 0) next = m_nTileCnt - 1;
+
+  m_nCurrTile = static_cast<int8_t>(next);
+  m_nNextTile = m_nCurrTile;
+  m_nCurrRow = m_tile[m_nCurrTile].nRow;
+  m_nLastRow = m_nCurrRow;
+  m_bSwipeReady = false;
+  m_pCurrBtn = NULL;
+  m_backlightTimer = ee.ssTime;
+  m_brightness = ee.brightLevel[1];
+
+  drawTile(m_nCurrTile, true, 0, 0);
+  sprite.pushSprite(0, 0);
+  Serial.printf("[V2-KEY] page=%d (%s)\n", m_nCurrTile,
+                m_tile[m_nCurrTile].pszTitle ? m_tile[m_nCurrTile].pszTitle : "dashboard");
+}
+
 void Display::exitScreensaver()
 {
   m_backlightTimer = ee.ssTime; // reset timer for any touch
