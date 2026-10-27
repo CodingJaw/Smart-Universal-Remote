@@ -107,6 +107,7 @@ private:
 #ifdef USE_AUDIO
   void Audio_Init(void);
 #endif
+  bool m_i2sReady = false; // avoid writing audio when I2S initialization fails
   uint16_t toneCount;
   int halfWavelength;
   const int sampleRate = 8000; // sample rate in Hz
