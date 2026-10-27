@@ -625,6 +625,12 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println("[V2] Smart Universal Remote starting");
+#ifdef WAVESHARE_LCD_28_V2
+  pinMode(0, INPUT_PULLUP);  // BOOT key; press only after boot
+  pinMode(6, INPUT_PULLUP);  // PWR key; active low
+#endif
 //  delay(1000);
 //  ets_printf("\nStarting\n"); // print over USB (if using UART pins for IR, don't print after it starts)
 //  ets_printf("Free: %ld\n", heap_caps_get_free_size(MALLOC_CAP_8BIT) );
@@ -657,6 +663,27 @@ void loop()
   static uint8_t hour_save, min_save = 255, sec_save;
   static int8_t lastSec;
   static int8_t lastHour;
+
+#ifdef WAVESHARE_LCD_28_V2
+  // Physical buttons on the Waveshare V2 are not the original keypad.
+  // Give them a diagnostic purpose even when touch is unavailable:
+  // BOOT advances pages, PWR goes back. Change only on a new keypress.
+  static bool bootWasDown = false, powerWasDown = false;
+  static uint32_t lastBootPress = 0, lastPowerPress = 0;
+  const bool bootDown = (digitalRead(0) == LOW);
+  const bool powerDown = (digitalRead(6) == LOW);
+  const uint32_t keyNow = millis();
+  if (bootDown && !bootWasDown && keyNow - lastBootPress >= 200U) {
+    display.navigateWithKey(1);
+    lastBootPress = keyNow;
+  }
+  if (powerDown && !powerWasDown && keyNow - lastPowerPress >= 200U) {
+    display.navigateWithKey(-1);
+    lastPowerPress = keyNow;
+  }
+  bootWasDown = bootDown;
+  powerWasDown = powerDown;
+#endif
 
   display.service();  // check for touch, etc.
   media.service();
