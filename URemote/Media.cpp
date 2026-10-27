@@ -15,7 +15,7 @@ Media::Media()
 void Media::service()
 {
 #if (USER_SETUP_ID==303) // 240x320 2.8"
-  if(toneCount)
+  if(m_i2sReady && toneCount)
   {
     if (toneCount % halfWavelength == 0 )
     {
@@ -83,14 +83,15 @@ void Media::service()
 void Media::init()
 {
 #if (USER_SETUP_ID==303) // 240x320 2.8"
-  i2s_mode_t mode = I2S_PHILIPS_MODE; // I2S decoder is needed
-  const int bps = 16;
-
-  I2S.begin(mode, sampleRate, bps);
+  // Configure the S3 GPIOs *before* beginning I2S. The original sketch
+  // initialized the driver with ESP32 default pins (GPIO25 is invalid on S3).
   I2S.setSckPin(I2S_BCLK);
   I2S.setDataPin(I2S_DOUT);
   I2S.setFsPin(I2S_LRC);
-
+  m_i2sReady = (I2S.begin(I2S_PHILIPS_MODE, sampleRate, 16) != 0);
+  Serial.printf("[V2-I2S] %s BCLK=%d DOUT=%d LRC=%d\\n",
+                m_i2sReady ? "ready" : "disabled",
+                I2S_BCLK, I2S_DOUT, I2S_LRC);
 #endif
 
 #ifdef USE_AUDIO
@@ -274,6 +275,7 @@ void Media::tone(int freq, int duration)
 #endif
 
 #if (USER_SETUP_ID==303) // 240x320 2.8"
+  if(!m_i2sReady || freq <= 0) return;
   halfWavelength = (sampleRate / freq); // half wavelength of square wave
   toneCount = duration;
 #endif
