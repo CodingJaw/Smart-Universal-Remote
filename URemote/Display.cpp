@@ -1213,6 +1213,17 @@ void Display::buttonCmd(Button *pBtn, bool bRepeat)
       break;
 
     case BTF_BT_ONOFF:
+#if defined(WAVESHARE_LCD_28_V2)
+      // The Waveshare V2 PlatformIO build does not enable the BLE keyboard.
+      // Calling btStart() from this UI button aborts in ESP32 coexistence
+      // (btStart -> esp_bt_controller_enable -> coex_enable).
+      // Keep the setting off until BLE is implemented and tested separately.
+      ee.bBtEnabled = false;
+      pBtn->pszText = "Bluetooth Off";
+      pBtn->flags &= ~BF_STATE_2;
+      notify("Bluetooth unavailable");
+      Serial.println("[V2-BLE] Bluetooth is not enabled in this firmware");
+#else
       ee.bBtEnabled = !ee.bBtEnabled;
       if(ee.bBtEnabled)
         btStart();
@@ -1226,6 +1237,7 @@ void Display::buttonCmd(Button *pBtn, bool bRepeat)
         pBtn->flags |= BF_STATE_2;
       else
         pBtn->flags &= ~BF_STATE_2;
+#endif
       break;
 
     case BTF_WIFI_ONOFF:
